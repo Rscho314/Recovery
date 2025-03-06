@@ -1,11 +1,12 @@
 Package: Recovery
-Title: What the Package Does (One Line, Title Case)
+Title: Recover Missing Diagnosis Test Data With Constraint-Solving
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Raoul", "Schorer", , "raoul.schorer@hug.ch", role = c("aut", "cre"))
+Description: Recovery provides an interface to constraint solvers aimed at missing diagnostic test data recovery.
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.0
+Imports: 
+    rolog
