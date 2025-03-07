@@ -2,11 +2,16 @@ Package: Recovery
 Title: Recover Missing Diagnosis Test Data With Constraint-Solving
 Version: 0.0.0.9000
 Authors@R: 
-    person("Raoul", "Schorer", , "raoul.schorer@hug.ch", role = c("aut", "cre"))
+    person("Raoul", "Schorer", , "raoul.schorer@hug.ch", role = c("aut", "cre"), comment= c(ORCID = "0000-0001-7848-7021"))
 Description: Recovery provides an interface to constraint solvers aimed at missing diagnostic test data recovery.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.0
+RoxygenNote: 7.1.2
 Imports: 
-    rolog
+    bslib,
+    rolog,
+    shiny
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
