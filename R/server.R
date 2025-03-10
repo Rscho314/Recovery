@@ -46,6 +46,7 @@ server <- function(data) {
                                              target="row",
                                              backgroundColor = DT::styleEqual(CLASS_LABELS,
                                                                               c(PALETTE[1:4],rep("white",5)))),
-                                 server=TRUE)
+                                     server=TRUE)
+        output$total.population <- shiny::renderText({"NA"})
     }
 }

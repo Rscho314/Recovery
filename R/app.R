@@ -1,10 +1,11 @@
-js <- "
-$(document).on('keyup', function(e) {
-  if(e.keyCode == 13) {
-    Shiny.setInputValue('keyPressed', true, {priority: 'event'});
-  }
-});
+#js <- "
+#$(document).on('keyup', function(e) {
+#  if(e.keyCode == 13) {
+#    Shiny.setInputValue('keyPressed', true, {priority: 'event'});
+#  }
+#});"
 
+js <- "
 $(document).on('focusout', function(e) {
     Shiny.setInputValue('focusOut', true, {priority: 'event'});
 });
