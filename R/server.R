@@ -3,6 +3,13 @@ class.label <- function(name,color,glyph) {
 }
 
 server <- function(data) {
+    #rolog::rolog_init(argv1 = commandArgs()[1])
+    #rolog::rolog_ok(warn=TRUE)
+    #rolog::consult("./Prolog/lists_x_dict.pl")
+    #rolog::query(call("pairs_x_dict",list(a=1,b=2),expression(X)))
+    #dummy <- rolog::submit()
+    #rolog::clear()
+    #message(str(dummy))
     function(input, output, session) {
         test.tf <- shiny::eventReactive(
                               input$keyPressed | input$focusOut,                          
@@ -47,6 +54,7 @@ server <- function(data) {
                                              backgroundColor = DT::styleEqual(CLASS_LABELS,
                                                                               c(PALETTE[1:4],rep("white",5)))),
                                      server=TRUE)
-        output$total.population <- shiny::renderText({"NA"})
+        output$total.population <- shiny::renderText({
+            "NA"})
     }
 }
