@@ -3,37 +3,48 @@ class.label <- function(name,color,glyph) {
 }
 
 server <- function(data) {
-    #rolog::rolog_init(argv1 = commandArgs()[1])
-    #rolog::rolog_ok(warn=TRUE)
-    #rolog::consult("./Prolog/lists_x_dict.pl")
-    #rolog::query(call("pairs_x_dict",list(a=1,b=2),expression(X)))
-    #dummy <- rolog::submit()
-    #rolog::clear()
-    #message(str(dummy))
+    
+    #rolog setup
+    rolog::rolog_init(argv1 = commandArgs()[1])
+    rolog::rolog_ok(warn=TRUE,stop=FALSE)
+    rolog::consult("~/Desktop/diag_swi/clpbnr_method/clpDiag/prolog/clpd.pl") #DEBUG
+
+    #add contingency table columns to dataset
+    data$recovery.reserved.test.tf <- NA
+    data$recovery.reserved.cond.tf <- NA
+    data$class <- NA
+
+    shiny::onStop(function() rolog::rolog_done())
+    
     function(input, output, session) {
-        test.tf <- shiny::eventReactive(
-                              input$keyPressed | input$focusOut,                          
-                              {
-                                  if(input$test.text != "" & input$cond.text != "") {
-                                      test.expr <- str2expression(input$test.text)
-                                      cond.expr <- str2expression(input$cond.text)
-                                      test.cond <- within(data,{
-                                          recovery.reserved.test.tf <- eval(test.expr) #this NEEDS preprocessing !
-                                          recovery.reserved.cond.tf <- eval(cond.expr)})
-                                      within(test.cond,{
-                                          class <- factor(paste0(recovery.reserved.test.tf,
-                                                                 "|",
-                                                                 recovery.reserved.cond.tf),
-                                                          levels=c("TRUE|TRUE","TRUE|FALSE","FALSE|TRUE","FALSE|FALSE",
-                                                                   "NA|TRUE","NA|FALSE","FALSE|NA","TRUE|NA","NA|NA"),
-                                                          labels=CLASS_LABELS)})
-                                  } else {
-                                      data
-                                  }},
-                              ignoreNULL=FALSE)
+
+        test.cond <- shiny::reactive({
+            ll <- do.call("mapply", c(list, data, SIMPLIFY = FALSE, USE.NAMES=FALSE))
+            if(input$test.text != "") {
+                ast <- strast(str2lang(input$test.text))
+                q <- rolog::once(call("r_formula_to_bools",ast,ll,expression(B)))
+                data$recovery.reserved.test.tf <- as.logical(unlist(q))
+            } else {
+                data$recovery.reserved.test.tf <- NA #reset
+            }
+            if(input$cond.text != "") {
+                ast <- strast(str2lang(input$cond.text))
+                q <- rolog::once(call("r_formula_to_bools",ast,ll,expression(B)))
+                data$recovery.reserved.cond.tf <- as.logical(unlist(q))
+            } else {
+                data$recovery.reserved.cond.tf <- NA
+            }
+            data <- within(data,{
+                class <- factor(paste0(recovery.reserved.test.tf,"|",recovery.reserved.cond.tf),
+                                levels=c("TRUE|TRUE","TRUE|FALSE","FALSE|TRUE","FALSE|FALSE",
+                                         "NA|TRUE","NA|FALSE","FALSE|NA","TRUE|NA","NA|NA"),
+                                labels=CLASS_LABELS)})
+        }) %>% shiny::bindEvent(list(input$test.text,input$cond.text),
+                                ignoreNULL=TRUE,ignoreInit=FALSE) #TODO:specify event !
+        
         output$data.table <- DT::renderDataTable(
                                      DT::formatStyle(
-                                             DT::datatable(test.tf(),
+                                             DT::datatable(test.cond(),
                                                            caption=shiny::tags$caption(
                                                                                    style="caption-side: top; text-align: center;",
                                                                                    "Row colors: ",
@@ -43,12 +54,12 @@ server <- function(data) {
                                                                                    class.label("True negative",PALETTE[4],"\U2b1b"),
                                                                                    class.label("Unknown/missing","black","\U2b1c")),
                                                            options=list(
-                                                               lengthMenu=list(c(10,25,50,-1),c("10","25","50","All")),
-                                                               columnDefs=list(
-                                                                   list(visible=FALSE,
-                                                                        targets=c("recovery.reserved.test.tf",
-                                                                                  "recovery.reserved.cond.tf"))))
-                                                           ),
+                                                               lengthMenu=list(c(10,25,50,-1),c("10","25","50","All"))
+#                                                               columnDefs=list(
+#                                                                   list(visible=FALSE,
+#                                                                        targets=c("recovery.reserved.test.tf",
+#                                                                                  "recovery.reserved.cond.tf")))
+                                                           )),
                                              "class",
                                              target="row",
                                              backgroundColor = DT::styleEqual(CLASS_LABELS,

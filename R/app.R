@@ -12,6 +12,8 @@ $(document).on('focusout', function(e) {
 "
 
 recovery.app <- function(data,...) {
+    data <- utils::read.csv("./tests/testthat/testdata/trivial_missing.csv") #DEBUG
+    
     if(missing(data)) stop("Please provide a data.frame.")
     if(!is.data.frame(data)) stop("The data you provided is not a data.frame.")
     if("recovery.reserved.test.tf" %in% colnames(data)) stop("'recovery.reserved.test.tf' is a reserved column name")
